@@ -46,7 +46,7 @@ jobs:
             set -e
 
             APP_DIR="/var/www/backend"
-            REPO="https://github.com/Diptendu10/mern-backend-gh-action.git"
+            REPO="https://github.com/Ratu0713/mern-backend-gh.git"
 
             echo "========================================="
             echo "DEPLOYMENT STARTED"
@@ -57,13 +57,22 @@ jobs:
             command -v node
             command -v npm
             command -v pm2
+            command -v curl
+
+            cd "$APP_DIR"
+
+            echo "Checking Git repository..."
 
             if [ ! -d "$APP_DIR/.git" ]; then
               echo "ERROR: Git repository not found in $APP_DIR"
               exit 1
             fi
 
-            cd "$APP_DIR"
+            echo "Checking Git remote..."
+
+            git remote set-url origin "$REPO"
+
+            git remote -v
 
             if [ ! -f "$APP_DIR/.env" ]; then
               echo "ERROR: .env file is missing!"
@@ -91,8 +100,6 @@ jobs:
 
             npm ci --omit=dev
 
-            pm2 --version
-
             echo "Restarting backend..."
 
             if pm2 describe backend-api >/dev/null 2>&1; then
@@ -105,7 +112,7 @@ jobs:
 
             echo "Waiting for backend..."
 
-            sleep 8
+            sleep 5
 
             pm2 status
 
